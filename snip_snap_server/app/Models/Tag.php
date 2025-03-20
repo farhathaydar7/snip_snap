@@ -16,6 +16,7 @@ class Tag extends Model
      */
     protected $fillable = [
         'name',
+        'user_id'
     ];
 
     /**
@@ -24,5 +25,13 @@ class Tag extends Model
     public function snippets()
     {
         return $this->belongsToMany(Snippet::class, 'snippet_tags');
+    }
+
+    /**
+     * The user that owns the tag.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -67,7 +67,7 @@ class TagController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50|unique:tags',
+            'name' => 'required|string|max:50|unique:tags,name,NULL,id,user_id,' . Auth::id(),
         ]);
 
         if ($validator->fails()) {
@@ -76,6 +76,7 @@ class TagController extends Controller
 
         $tag = Tag::create([
             'name' => $request->name,
+            'user_id' => Auth::id()
         ]);
 
         return response()->json($tag, 201);

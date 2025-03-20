@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Add a login route for web access
+Route::get('/login', function () {
+    return response()->json([
+        'message' => 'Please use the API endpoint /api/auth/login for authentication',
+    ], 401);
+})->name('login');

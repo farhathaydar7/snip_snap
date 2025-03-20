@@ -36,6 +36,7 @@ Route::group(['prefix' => 'auth'], function () {
 // Snippet Routes
 Route::apiResource('snippets', SnippetController::class);
 Route::post('snippets/{id}/favorite', [SnippetController::class, 'toggleFavorite']);
+Route::post('snippets/create-or-update/{id?}', [SnippetController::class, 'storeOrUpdate']);
 
 // Tag Routes
 Route::apiResource('tags', TagController::class);

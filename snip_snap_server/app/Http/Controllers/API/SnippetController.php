@@ -2,23 +2,30 @@
 
 namespace App\Http\Controllers\API;
 
+use App\DTO\SnippetDTO;
 use App\Http\Controllers\Controller;
-use App\Models\Snippet;
-use App\Models\Tag;
+use App\Http\Requests\StoreUpdateSnippetRequest;
+use App\Services\SnippetService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class SnippetController extends Controller
 {
     /**
+     * @var SnippetService
+     */
+    protected $snippetService;
+
+    /**
      * Create a new controller instance.
      *
+     * @param SnippetService $snippetService
      * @return void
      */
-    public function __construct()
+    public function __construct(SnippetService $snippetService)
     {
         $this->middleware('auth:api');
+        $this->snippetService = $snippetService;
     }
 
     /**
@@ -29,96 +36,39 @@ class SnippetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Snippet::with('tags');
-
-        // Only show authenticated user's snippets
-        $query->where('user_id', Auth::id());
-
-        // Filter by title, description, or tags
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('description', 'LIKE', "%{$search}%")
-                  ->orWhereHas('tags', function($q) use ($search) {
-                      $q->where('name', 'LIKE', "%{$search}%");
-                  });
-            });
-        }
-
-        // Filter by language
-        if ($request->has('language')) {
-            $query->where('language', $request->language);
-        }
-
-        // Filter by favorite status
-        if ($request->has('is_favorite')) {
-            $query->where('is_favorite', filter_var($request->is_favorite, FILTER_VALIDATE_BOOLEAN));
-        }
-
-        // Filter by tag
-        if ($request->has('tag')) {
-            $query->whereHas('tags', function($q) use ($request) {
-                $q->where('name', $request->tag);
-            });
-        }
-
-        // Sort by a specific field
-        if ($request->has('sort')) {
-            $direction = $request->has('direction') && strtolower($request->direction) === 'asc' ? 'asc' : 'desc';
-            $query->orderBy($request->sort, $direction);
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
-
+        $filters = $request->all();
         $perPage = $request->has('per_page') ? (int) $request->per_page : 10;
-        return response()->json($query->paginate($perPage));
+
+        $snippets = $this->snippetService->getAllSnippets($filters, $perPage);
+
+        return response()->json($snippets);
+    }
+
+    /**
+     * Store a newly created resource or update an existing one.
+     *
+     * @param  \App\Http\Requests\StoreUpdateSnippetRequest  $request
+     * @param  int|null  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function storeOrUpdate(StoreUpdateSnippetRequest $request, ?int $id = null)
+    {
+        $snippetDTO = SnippetDTO::fromRequest($request->validated(), $id);
+        $snippet = $this->snippetService->createOrUpdateSnippet($snippetDTO);
+
+        $isNew = $id === null;
+        return response()->json($snippet, $isNew ? 201 : 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreUpdateSnippetRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUpdateSnippetRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'code' => 'required|string',
-            'language' => 'required|string|max:50',
-            'is_favorite' => 'boolean',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        $snippet = Snippet::create([
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'description' => $request->description,
-            'code' => $request->code,
-            'language' => $request->language,
-            'is_favorite' => $request->is_favorite ?? false,
-        ]);
-
-        // Handle tags
-        if ($request->has('tags') && is_array($request->tags)) {
-            $tagIds = [];
-
-            foreach ($request->tags as $tagName) {
-                $tag = Tag::firstOrCreate(['name' => $tagName]);
-                $tagIds[] = $tag->id;
-            }
-
-            $snippet->tags()->sync($tagIds);
-        }
-
-        return response()->json($snippet->load('tags'), 201);
+        return $this->storeOrUpdate($request);
     }
 
     /**
@@ -129,7 +79,7 @@ class SnippetController extends Controller
      */
     public function show($id)
     {
-        $snippet = Snippet::with('tags')->find($id);
+        $snippet = $this->snippetService->getSnippet($id);
 
         if (!$snippet) {
             return response()->json(['message' => 'Snippet not found'], 404);
@@ -146,54 +96,13 @@ class SnippetController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreUpdateSnippetRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StoreUpdateSnippetRequest $request, $id)
     {
-        $snippet = Snippet::find($id);
-
-        if (!$snippet) {
-            return response()->json(['message' => 'Snippet not found'], 404);
-        }
-
-        // Check if user is authorized to update this snippet
-        if ($snippet->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'code' => 'sometimes|required|string',
-            'language' => 'sometimes|required|string|max:50',
-            'is_favorite' => 'boolean',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        $snippet->update($request->only([
-            'title', 'description', 'code', 'language', 'is_favorite'
-        ]));
-
-        // Handle tags
-        if ($request->has('tags') && is_array($request->tags)) {
-            $tagIds = [];
-
-            foreach ($request->tags as $tagName) {
-                $tag = Tag::firstOrCreate(['name' => $tagName]);
-                $tagIds[] = $tag->id;
-            }
-
-            $snippet->tags()->sync($tagIds);
-        }
-
-        return response()->json($snippet->load('tags'));
+        return $this->storeOrUpdate($request, $id);
     }
 
     /**
@@ -204,19 +113,11 @@ class SnippetController extends Controller
      */
     public function toggleFavorite($id)
     {
-        $snippet = Snippet::find($id);
+        $snippet = $this->snippetService->toggleFavorite($id);
 
         if (!$snippet) {
-            return response()->json(['message' => 'Snippet not found'], 404);
+            return response()->json(['message' => 'Snippet not found or unauthorized'], 404);
         }
-
-        // Check if user is authorized to update this snippet
-        if ($snippet->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $snippet->is_favorite = !$snippet->is_favorite;
-        $snippet->save();
 
         return response()->json([
             'message' => $snippet->is_favorite ? 'Snippet marked as favorite' : 'Snippet removed from favorites',
@@ -232,18 +133,11 @@ class SnippetController extends Controller
      */
     public function destroy($id)
     {
-        $snippet = Snippet::find($id);
+        $deleted = $this->snippetService->deleteSnippet($id);
 
-        if (!$snippet) {
-            return response()->json(['message' => 'Snippet not found'], 404);
+        if (!$deleted) {
+            return response()->json(['message' => 'Snippet not found or unauthorized'], 404);
         }
-
-        // Check if user is authorized to delete this snippet
-        if ($snippet->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $snippet->delete();
 
         return response()->json(['message' => 'Snippet deleted successfully']);
     }

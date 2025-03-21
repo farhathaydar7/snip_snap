@@ -66,9 +66,17 @@ const SnippetDetail = () => {
   };
 
   const handleToggleFavorite = async () => {
+    // For new snippets, just update the local state
     if (isNewSnippet) {
-      setSnippet({ ...snippet, is_favorite: !snippet.is_favorite });
-      return;
+      // If not saved yet, just update the UI state
+      if (!snippet.id) {
+        setSnippet({ ...snippet, is_favorite: !snippet.is_favorite });
+        setSuccessMessage(
+          "Please save the snippet first to make it a favorite"
+        );
+        setTimeout(() => setSuccessMessage(""), 3000);
+        return;
+      }
     }
 
     if (!id || id === "new") {
@@ -106,6 +114,35 @@ const SnippetDetail = () => {
         tags: tagArray,
       };
 
+      // Check for duplicates if creating a new snippet
+      if (isNewSnippet) {
+        try {
+          const existingSnippets = await snippetService.getAllSnippets({
+            search: snippet.title,
+          });
+
+          const possibleDuplicates = existingSnippets.data.filter(
+            (s) =>
+              s.title.toLowerCase() === snippet.title.toLowerCase() &&
+              s.language.toLowerCase() === snippet.language.toLowerCase()
+          );
+
+          if (possibleDuplicates.length > 0) {
+            if (
+              !window.confirm(
+                `A snippet with the title "${snippet.title}" and language "${snippet.language}" already exists. Save anyway?`
+              )
+            ) {
+              setIsSaving(false);
+              return;
+            }
+          }
+        } catch (error) {
+          console.error("Error checking for duplicates:", error);
+          // Continue with save even if duplicate check fails
+        }
+      }
+
       console.log(
         "Saving snippet:",
         snippetToSave,
@@ -124,7 +161,15 @@ const SnippetDetail = () => {
       setIsEditing(false);
 
       if (isNewSnippet) {
-        navigate(`/snippet/${savedSnippet.id}`);
+        if (savedSnippet && savedSnippet.id) {
+          navigate(`/snippet/${savedSnippet.id}`);
+        } else {
+          console.error("Saved snippet missing ID:", savedSnippet);
+          setError(
+            "Snippet was saved but ID is missing. Please try again or check the dashboard."
+          );
+          setTimeout(() => navigate("/"), 3000); // Redirect to dashboard after 3 seconds
+        }
       } else {
         setSnippet(savedSnippet);
         if (savedSnippet.tags && Array.isArray(savedSnippet.tags)) {

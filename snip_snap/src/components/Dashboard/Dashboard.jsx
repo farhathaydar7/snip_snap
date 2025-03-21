@@ -144,13 +144,11 @@ const Dashboard = () => {
   };
 
   const handleCreateSnippet = () => {
-    // Navigate to the create snippet page (to be implemented)
-    console.log("Create new snippet");
+    navigate("/snippet/new");
   };
 
   const handleEditSnippet = (snippetId) => {
-    // Navigate to the edit snippet page (to be implemented)
-    console.log("Edit snippet with ID:", snippetId);
+    navigate(`/snippet/${snippetId}`);
   };
 
   return (
@@ -226,6 +224,15 @@ const Dashboard = () => {
           </button>
         </div>
       )}
+      
+      {/* Floating Action Button for creating a new snippet */}
+      <button 
+        className="floating-action-button" 
+        onClick={handleCreateSnippet}
+        aria-label="Create new snippet"
+      >
+        +
+      </button>
     </div>
   );
 };

@@ -14,11 +14,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        // Create a test user if none exists
+        $user = \App\Models\User::where('email', 'test@example.com')->first();
+        if (!$user) {
+            $user = \App\Models\User::factory()->create([
+                'username' => 'testuser',
+                'email' => 'test@example.com',
+                'password' => bcrypt('password'),
+            ]);
+        }
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Call the snippet seeder
+        $this->call(SnippetSeeder::class);
     }
 }

@@ -13,6 +13,25 @@ authAxios.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle unauthorized responses (401)
+authAxios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.log("Unauthorized access detected, redirecting to login");
+      // Clear auth data
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // Redirect to login page
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const register = async (userData) => {
   const response = await axios.post(ENDPOINTS.AUTH.REGISTER, userData);
   if (response.data.access_token) {
@@ -58,5 +77,22 @@ export const getCurrentUser = async () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     return null;
+  }
+};
+
+// Add a function to check if the token is still valid
+export const checkTokenValidity = async () => {
+  try {
+    // Try to fetch user data with the current token
+    const response = await authAxios.get("/auth/me");
+    return response.status === 200;
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.log("Token validation failed, 401 Unauthorized");
+      return false;
+    }
+    // For any other error, we'll assume token is invalid
+    console.error("Error validating token:", error);
+    return false;
   }
 };

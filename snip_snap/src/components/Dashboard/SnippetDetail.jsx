@@ -53,6 +53,12 @@ const SnippetDetail = () => {
     } catch (error) {
       setError("Failed to load snippet details.");
       console.error(error);
+
+      // Handle unauthorized access
+      if (error.response && error.response.status === 401) {
+        // Redirect to login page
+        navigate("/");
+      }
     }
   };
 
@@ -168,7 +174,7 @@ const SnippetDetail = () => {
           setError(
             "Snippet was saved but ID is missing. Please try again or check the dashboard."
           );
-          setTimeout(() => navigate("/"), 3000); // Redirect to dashboard after 3 seconds
+          setTimeout(() => navigate("/dashboard"), 3000); // Redirect to dashboard after 3 seconds
         }
       } else {
         setSnippet(savedSnippet);
@@ -196,7 +202,7 @@ const SnippetDetail = () => {
     if (window.confirm("Are you sure you want to delete this snippet?")) {
       try {
         await snippetService.deleteSnippet(id);
-        navigate("/");
+        navigate("/dashboard"); // Navigate to dashboard instead of root
       } catch (error) {
         setError("Failed to delete snippet.");
         console.error(error);
@@ -282,7 +288,10 @@ const SnippetDetail = () => {
           )}
 
           {isEditing && isNewSnippet && (
-            <button className="cancel-btn" onClick={() => navigate("/")}>
+            <button
+              className="cancel-btn"
+              onClick={() => navigate("/dashboard")}
+            >
               Cancel
             </button>
           )}

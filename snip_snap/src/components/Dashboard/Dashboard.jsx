@@ -137,7 +137,7 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -224,10 +224,10 @@ const Dashboard = () => {
           </button>
         </div>
       )}
-      
+
       {/* Floating Action Button for creating a new snippet */}
-      <button 
-        className="floating-action-button" 
+      <button
+        className="floating-action-button"
         onClick={handleCreateSnippet}
         aria-label="Create new snippet"
       >

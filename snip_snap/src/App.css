@@ -186,3 +186,40 @@ textarea {
 .read-the-docs {
   color: #888;
 }
+
+/* Loading Screen */
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--bg-primary, #f5f5f5);
+  color: var(--text-primary, #333);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+/* Add a loading animation */
+.loading-screen:after {
+  content: "...";
+  animation: loading-dots 1.5s infinite;
+  display: inline-block;
+  width: 2rem;
+  text-align: left;
+}
+
+@keyframes loading-dots {
+  0% {
+    content: ".";
+  }
+  33% {
+    content: "..";
+  }
+  66% {
+    content: "...";
+  }
+  100% {
+    content: ".";
+  }
+}

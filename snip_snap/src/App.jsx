@@ -11,8 +11,14 @@ import "./components/css/SnippetDetail.css";
 
 // Private route component that redirects to login if not authenticated
 const PrivateRoute = ({ element }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? element : <Navigate to="/login" />;
+  const { isAuthenticated, loading } = useAuth();
+
+  // Show loading indicator while checking authentication
+  if (loading) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
+  return isAuthenticated ? element : <Navigate to="/" replace />;
 };
 
 function App() {
@@ -20,9 +26,15 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          {/* Public routes */}
+          <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/dashboard"
+            element={<PrivateRoute element={<Dashboard />} />}
+          />
           <Route
             path="/snippet/new"
             element={<PrivateRoute element={<SnippetDetail />} />}
@@ -31,6 +43,8 @@ function App() {
             path="/snippet/:id"
             element={<PrivateRoute element={<SnippetDetail />} />}
           />
+
+          {/* Fallback route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

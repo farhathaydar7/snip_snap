@@ -89,14 +89,9 @@ const Dashboard = () => {
 
   // Only fetch on mount and when filters change
   useEffect(() => {
-    if (
-      !initialFetchDone.current ||
-      JSON.stringify(filters) !==
-        '{"search":"","language":"","tag":"","favorites":false,"page":1}'
-    ) {
-      fetchSnippets();
-      initialFetchDone.current = true;
-    }
+    // Always fetch when fetchSnippets changes (which happens when filters change)
+    fetchSnippets();
+    initialFetchDone.current = true;
   }, [fetchSnippets]);
 
   // Cleanup on unmount

@@ -52,10 +52,20 @@ const FilterBar = ({ onFilterChange }) => {
 
   // Reset all filters
   const handleResetFilters = () => {
+    // Reset local state
     setSearchTerm("");
     setLanguage("");
     setTag("");
     setFavorites(false);
+
+    // Explicitly call onFilterChange with empty filters
+    // This ensures the parent component gets notified immediately
+    onFilterChange({
+      search: "",
+      language: "",
+      tag: "",
+      favorites: false,
+    });
   };
 
   return (

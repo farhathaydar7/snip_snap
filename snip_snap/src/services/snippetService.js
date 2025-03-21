@@ -10,7 +10,7 @@ const snippetService = {
     if (filters.search) queryParams.append("search", filters.search);
     if (filters.language) queryParams.append("language", filters.language);
     if (filters.tag) queryParams.append("tag", filters.tag);
-    if (filters.favorites) queryParams.append("favorites", "true");
+    if (filters.favorites) queryParams.append("is_favorite", "1");
     if (filters.page) queryParams.append("page", filters.page);
 
     const queryString = queryParams.toString();

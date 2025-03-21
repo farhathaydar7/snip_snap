@@ -1,0 +1,379 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-full);
+  background-color: var(--tag-bg, var(--bg-surface-2));
+  color: var(--tag-text, var(--text-primary));
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.tag:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+.tag.selected {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  font-weight: 600;
+}
+
+.tag.removable {
+  padding-right: 0.5rem;
+}
+
+.tag-icon {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.remove-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radius-full);
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-tag:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  transform: scale(1.2);
+}
+
+/* Tag category colors */
+.tag.algorithm {
+  --tag-bg: rgba(99, 102, 241, 0.15);
+  --tag-text: var(--primary-color);
+}
+
+.tag.algorithm:hover {
+  --tag-bg: rgba(99, 102, 241, 0.25);
+}
+
+.tag.function {
+  --tag-bg: rgba(16, 185, 129, 0.15);
+  --tag-text: var(--success-color);
+}
+
+.tag.function:hover {
+  --tag-bg: rgba(16, 185, 129, 0.25);
+}
+
+.tag.utility {
+  --tag-bg: rgba(245, 158, 11, 0.15);
+  --tag-text: var(--warning-color);
+}
+
+.tag.utility:hover {
+  --tag-bg: rgba(245, 158, 11, 0.25);
+}
+
+.tag.example {
+  --tag-bg: rgba(59, 130, 246, 0.15);
+  --tag-text: var(--info-color);
+}
+
+.tag.example:hover {
+  --tag-bg: rgba(59, 130, 246, 0.25);
+}
+
+.tag.tutorial {
+  --tag-bg: rgba(236, 72, 153, 0.15);
+  --tag-text: #db2777;
+}
+
+.tag.tutorial:hover {
+  --tag-bg: rgba(236, 72, 153, 0.25);
+}
+
+.tag.snippet {
+  --tag-bg: rgba(139, 92, 246, 0.15);
+  --tag-text: #7c3aed;
+}
+
+.tag.snippet:hover {
+  --tag-bg: rgba(139, 92, 246, 0.25);
+}
+
+/* Tag list container */
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+/* Tag input container */
+.tag-input-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tag-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface-2);
+  transition: all 0.2s;
+}
+
+.tag-input-row:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.tag-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  padding: 0;
+}
+
+.tag-input:focus {
+  outline: none;
+}
+
+.clear-tags {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: var(--radius-full);
+}
+
+.clear-tags:hover {
+  color: var(--error-color);
+  background-color: var(--error-light);
+}
+
+/* Tag suggestions */
+.tag-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--bg-surface);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+  margin-top: -1px;
+}
+
+/* Custom scrollbar for suggestions */
+.tag-suggestions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tag-suggestions::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+.tag-suggestions::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 20px;
+  border: 2px solid var(--bg-surface);
+}
+
+.tag-suggestions::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
+}
+
+.tag-suggestion {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tag-suggestion:not(:last-child) {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tag-suggestion:hover,
+.tag-suggestion.active {
+  background-color: var(--bg-surface-2);
+}
+
+.tag-suggestion-highlight {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.tag-suggestion-category {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface-2);
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.tag-info {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced responsive adjustments */
+@media (max-width: 1024px) {
+  .tags-list {
+    gap: 0.6rem;
+  }
+  
+  .tag-input-row {
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+  }
+  
+  .tag-input {
+    font-size: 0.9rem;
+  }
+  
+  .tag-suggestions {
+    max-height: 180px;
+  }
+  
+  .tag-suggestion {
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+  
+  .remove-tag {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  
+  .tags-list {
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  
+  .tag-input-row {
+    padding: 0.65rem 0.85rem;
+  }
+  
+  .tag-input {
+    font-size: 0.85rem;
+  }
+  
+  .tag-suggestions {
+    max-height: 150px;
+  }
+  
+  .tag-suggestion {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.85rem;
+  }
+  
+  .tag-suggestion-category {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+  
+  .tag-info {
+    font-size: 0.7rem;
+  }
+}
+
+/* Small phone adjustments */
+@media (max-width: 480px) {
+  .tag {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .tag-icon {
+    font-size: 0.65rem;
+  }
+  
+  .remove-tag {
+    width: 0.8rem;
+    height: 0.8rem;
+    font-size: 0.55rem;
+  }
+  
+  .tags-list {
+    gap: 0.4rem;
+    margin: 0.6rem 0;
+  }
+  
+  .tag-input-row {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .tag-input {
+    font-size: 0.8rem;
+  }
+  
+  .tag-suggestions {
+    max-height: 120px;
+  }
+  
+  .tag-suggestion {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}

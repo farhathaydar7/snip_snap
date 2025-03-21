@@ -2,7 +2,7 @@
 import axios from "axios";
 import ENDPOINTS from "../config/links";
 
-const authAxios = axios.create();
+export const authAxios = axios.create();
 
 // Add token to requests
 authAxios.interceptors.request.use((config) => {

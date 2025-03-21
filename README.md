@@ -5,6 +5,7 @@ SnipSnap is a modern web application that helps developers store, organize, and 
 ## What I Built
 
 This project consists of two main components:
+
 - `snip_snap_server`: Laravel-based REST API backend
 - `snip_snap`: React-based frontend built with Vite
 
@@ -31,6 +32,7 @@ We've implemented a clean, maintainable architecture following SOLID principles:
 ## Getting Started
 
 ### Prerequisites
+
 - PHP 8.0+ (with Composer)
 - MySQL 5.7+
 - Node.js 14+
@@ -38,31 +40,44 @@ We've implemented a clean, maintainable architecture following SOLID principles:
 ### Backend Setup
 
 1. Navigate to the backend directory:
+
    ```
    cd snip_snap_server
    ```
 
 2. Install dependencies:
+
    ```
    composer install
    ```
 
 3. Create a database:
+
    ```
    php artisan db:create
    ```
 
 4. Run migrations:
+
    ```
    php artisan migrate
    ```
 
-5. Generate JWT secret:
+5. Seed the database with sample data:
+
+   ```
+   php artisan db:seed
+   ```
+
+   This will create a test user (email: test@example.com, password: password) and populate the database with code snippets across various programming languages.
+
+6. Generate JWT secret:
+
    ```
    php artisan jwt:secret
    ```
 
-6. Start the server:
+7. Start the server:
    ```
    php artisan serve
    ```
@@ -74,91 +89,98 @@ The API will be available at `http://localhost:8000`.
 You can test the API endpoints using Postman. Here are the key routes and how to use them:
 
 ### 1. Test API Connection
+
 - **Method**: GET
 - **URL**: http://localhost:8000/api/test
 - **Headers**: None required
 - **Expected Response**:
   ```json
   {
-      "message": "API is working!"
+    "message": "API is working!"
   }
   ```
 
 ### 2. Register User
+
 - **Method**: POST
 - **URL**: http://localhost:8000/api/auth/register
-- **Headers**: 
+- **Headers**:
   - Content-Type: application/json
 - **Body** (raw JSON):
   ```json
   {
-      "username": "testuser",
-      "email": "test@example.com",
-      "password": "password123"
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "password123"
   }
   ```
 - **Expected Response**: JWT token and user information
 
 ### 3. Login
+
 - **Method**: POST
 - **URL**: http://localhost:8000/api/auth/login
-- **Headers**: 
+- **Headers**:
   - Content-Type: application/json
 - **Body** (raw JSON):
   ```json
   {
-      "email": "test@example.com",
-      "password": "password123"
+    "email": "test@example.com",
+    "password": "password123"
   }
   ```
 - **Expected Response**: JWT token for use in authenticated requests
 
 ### 4. Create or Update Snippet (New Feature!)
+
 - **Method**: POST
 - **URL**: http://localhost:8000/api/snippets/create-or-update/{id?}
   - Leave out the ID to create a new snippet
   - Include an ID to update an existing snippet
-- **Headers**: 
+- **Headers**:
   - Content-Type: application/json
   - Authorization: Bearer {your_jwt_token}
 - **Body** (raw JSON):
   ```json
   {
-      "title": "Hello World in JavaScript",
-      "description": "Simple console log example",
-      "code": "console.log('Hello, World!');",
-      "language": "javascript",
-      "is_favorite": false,
-      "tags": ["javascript", "beginner"]
+    "title": "Hello World in JavaScript",
+    "description": "Simple console log example",
+    "code": "console.log('Hello, World!');",
+    "language": "javascript",
+    "is_favorite": false,
+    "tags": ["javascript", "beginner"]
   }
   ```
 - **Expected Response**: The created or updated snippet
 
 ### 5. Get All Snippets (with optional filtering)
+
 - **Method**: GET
 - **URL**: http://localhost:8000/api/snippets
   - Optional query parameters: search, language, is_favorite, tag, sort, direction, per_page
-- **Headers**: 
+- **Headers**:
   - Authorization: Bearer {your_jwt_token}
 - **Expected Response**: List of snippets with pagination
 
 ### 6. Toggle Favorite
+
 - **Method**: POST
 - **URL**: http://localhost:8000/api/snippets/{snippet_id}/favorite
-- **Headers**: 
+- **Headers**:
   - Authorization: Bearer {your_jwt_token}
 - **Expected Response**: Updated favorite status
 
 ### Important Note on Authorization
 
 When sending requests that require authentication, make sure to:
+
 1. Include the Authorization header with your token
 2. Format it as: `Bearer {token}` (note the space between "Bearer" and the token)
 
 Example:
+
 ```
 Authorization: Bearer eyJ0e...uM
 ```
-
 
 If you have any questions or suggestions about SnipSnap, feel free to reach out!

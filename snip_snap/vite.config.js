@@ -6,7 +6,20 @@ export default defineConfig({
   plugins: [
     react({
       // This tells Vite to apply JSX transformations to .js files too
-      include: /\.(jsx|js)$/,
+      include: "**/*.{jsx,js}",
+      jsxRuntime: "automatic",
     }),
   ],
+  esbuild: {
+    loader: "jsx",
+    include: /src\/.*\.jsx?$/,
+    exclude: [],
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        ".js": "jsx",
+      },
+    },
+  },
 });

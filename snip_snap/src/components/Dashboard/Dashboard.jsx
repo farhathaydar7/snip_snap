@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SnippetList from "./SnippetList";
 import FilterBar from "./FilterBar";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth.jsx";
 import "../css/Dashboard.css";
 import snippetService from "../../services/snippetService";
 

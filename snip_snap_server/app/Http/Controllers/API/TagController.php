@@ -10,22 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    
     public function __construct()
     {
         $this->middleware('auth:api');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $query = Tag::withCount(['snippets' => function($query) {
@@ -58,12 +48,6 @@ class TagController extends Controller
         return response()->json($query->get());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -82,12 +66,6 @@ class TagController extends Controller
         return response()->json($tag, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $tag = Tag::with(['snippets' => function($query) {
@@ -106,13 +84,6 @@ class TagController extends Controller
         return response()->json($tag);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $tag = Tag::find($id);
@@ -158,7 +129,6 @@ class TagController extends Controller
         }
 
         // Check if user is authorized to delete this tag
-        // Only allow deleting if this tag is only used by the authenticated user's snippets
         $hasOtherUsersSnippets = $tag->snippets()->where('user_id', '!=', Auth::id())->exists();
         if ($hasOtherUsersSnippets) {
             return response()->json(['message' => 'Cannot delete tag used by other users'], 403);

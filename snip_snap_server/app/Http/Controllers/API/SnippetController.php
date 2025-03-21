@@ -85,12 +85,6 @@ class SnippetController extends Controller
         return $this->storeOrUpdate($request);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $snippet = $this->snippetService->getSnippet($id);
@@ -107,24 +101,11 @@ class SnippetController extends Controller
         return response()->json($snippet);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreUpdateSnippetRequest  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(StoreUpdateSnippetRequest $request, $id)
     {
         return $this->storeOrUpdate($request, $id);
     }
 
-    /**
-     * Toggle the favorite status of the specified snippet.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function toggleFavorite($id)
     {
         $snippet = $this->snippetService->toggleFavorite($id);
@@ -139,12 +120,6 @@ class SnippetController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $deleted = $this->snippetService->deleteSnippet($id);

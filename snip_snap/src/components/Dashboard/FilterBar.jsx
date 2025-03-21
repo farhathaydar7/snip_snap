@@ -39,9 +39,9 @@ const FilterBar = ({ onFilterChange }) => {
     // Debounce filter changes
     const timeoutId = setTimeout(() => {
       const filters = {
-        search: searchTerm,
+        search: searchTerm.trim(),
         language: language,
-        tag: tag,
+        tag: tag.trim(),
         favorites: favorites,
       };
       onFilterChange(filters);

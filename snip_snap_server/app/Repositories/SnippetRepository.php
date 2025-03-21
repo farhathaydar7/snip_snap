@@ -24,7 +24,7 @@ class SnippetRepository implements SnippetRepositoryInterface
             $query->where('user_id', $filters['user_id']);
         }
 
-        if (isset($filters['search'])) {
+        if (isset($filters['search']) && !empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -42,8 +42,9 @@ class SnippetRepository implements SnippetRepositoryInterface
         }
 
         if (isset($filters['tag'])) {
-            $query->whereHas('tags', function ($q) use ($filters) {
-                $q->where('name', $filters['tag']);
+            $tag = $filters['tag'];
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', 'like', "%{$tag}%");
             });
         }
 

@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\SnippetController;
 use App\Http\Controllers\API\TagController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\HealthCheckController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +18,8 @@ use App\Http\Controllers\API\TagController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// User routes
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'profile']);
 
 // Authentication Routes
 Route::group(['prefix' => 'auth'], function () {
@@ -41,7 +41,5 @@ Route::post('snippets/create-or-update/{id?}', [SnippetController::class, 'store
 // Tag Routes
 Route::apiResource('tags', TagController::class);
 
-// Test route
-Route::get('/test', function () {
-    return response()->json(['message' => 'API is working!']);
-});
+// Health check route
+Route::get('/test', [HealthCheckController::class, 'test']);

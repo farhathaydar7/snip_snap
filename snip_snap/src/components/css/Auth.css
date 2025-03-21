@@ -13,6 +13,16 @@
     var(--bg-primary) 100%
   );
   animation: fadeIn 0.4s ease-out;
+  width: 100%;
+  position: relative;
+}
+
+.login-container > *,
+.register-container > * {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 500px;
+  width: 100%;
 }
 
 .login-container::before,
@@ -57,6 +67,7 @@
   position: relative;
   overflow: hidden;
   animation: fadeIn 0.4s ease-out 0.2s both;
+  margin: 0 auto;
 }
 
 /* Glass effect accent at the top */
@@ -112,9 +123,9 @@
   padding: 0.875rem 1.5rem;
   background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
   color: white;
+  font-weight: 600;
   border: none;
   border-radius: var(--radius-md);
-  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -143,6 +154,10 @@
   color: var(--text-secondary);
   font-size: 0.9rem;
   animation: fadeIn 0.4s ease-out 0.5s both;
+  max-width: 500px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .auth-footer a {
@@ -166,6 +181,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .auth-alert.error {
@@ -206,6 +225,9 @@
   margin-top: 2rem;
   width: 100%;
   animation: fadeIn 0.4s ease-out 0.6s both;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .social-login-divider {
@@ -270,6 +292,18 @@
 
 .social-icon {
   font-size: 1.25rem;
+}
+
+.auth-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* Enhanced responsive adjustments */

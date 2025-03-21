@@ -1,9 +1,10 @@
 /* Dashboard Layout */
 .dashboard {
   min-height: 100vh;
+  width: 100%;
   padding: 2rem 1rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -111,6 +112,7 @@
 
 .dashboard-content {
   min-height: 300px;
+  width: 100%;
   animation: fadeIn 0.5s ease-out 0.2s both;
 }
 
@@ -329,9 +331,11 @@
 /* SnippetList Component */
 .snippet-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
   padding: 0.5rem;
+  width: 100%;
+  margin: 0;
 }
 
 /* SnippetCard Component */
@@ -554,10 +558,37 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Enhanced Responsive adjustments */
-@media (max-width: 1024px) {
+/* Enhanced responsive adjustments for the snippet grid */
+@media (min-width: 1921px) {
   .snippet-list {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 1600px) and (max-width: 1920px) {
+  .snippet-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .snippet-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .snippet-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .snippet-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.25rem;
   }
 }
 
@@ -570,7 +601,7 @@
   .dashboard-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.25rem;
+    gap: 1rem;
     padding-bottom: 1.25rem;
   }
 
@@ -588,9 +619,8 @@
   }
 
   .snippet-list {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    padding: 0.25rem;
-    gap: 1.25rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .pagination {
@@ -598,9 +628,8 @@
   }
 
   .pagination button {
-    min-width: 36px;
-    height: 36px;
-    font-size: 0.875rem;
+    min-width: 35px;
+    height: 35px;
   }
 
   .filter-bar {
@@ -608,7 +637,7 @@
   }
 
   .filter-actions {
-    justify-content: space-between;
+    flex-wrap: wrap;
   }
 }
 

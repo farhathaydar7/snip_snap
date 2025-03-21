@@ -2,14 +2,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
-import { useAuth } from "../../hooks/useAuth.jsx";
 import axios from "axios";
 import ENDPOINTS from "../../config/links";
 import "../css/Auth.css";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [apiError, setApiError] = useState("");
 
   const {
@@ -20,7 +18,7 @@ const Register = () => {
     handleSubmit,
     setErrors,
   } = useForm({
-    username: "", // Laravel expects username, not name
+    name: "",
     email: "",
     password: "",
     password_confirmation: "",
@@ -31,36 +29,28 @@ const Register = () => {
     try {
       console.log("Sending registration data:", formValues);
 
-      // Direct API call to debug
+      // Direct API call
       const response = await axios.post(ENDPOINTS.AUTH.REGISTER, formValues);
       console.log("Registration response:", response.data);
 
-      // The API returns an access_token property in the response
-      if (response.data && response.data.access_token) {
-        // Store the token from the correct property
-        localStorage.setItem("token", response.data.access_token);
-
-        // Store user info if needed
-        if (response.data.user) {
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-        }
-
-        // Navigate to dashboard on success
-        navigate("/dashboard");
+      // Check if the registration was successful
+      if (response.data && response.data.user) {
+        // Show success message or automatically log the user in
+        // For now, we'll just navigate to login
+        navigate("/login", {
+          state: { message: "Registration successful! Please log in." },
+        });
       } else {
-        // The request was successful but didn't return a token
         setApiError(
-          "Registration successful but no token received. Please try logging in."
+          "Registration successful but unexpected response. Please try logging in."
         );
       }
     } catch (err) {
       console.error("Registration error:", err.response?.data || err.message);
 
-      // Set validation errors from the backend
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {
-        // Set a general error message
         setApiError(
           err.response?.data?.message ||
             "Registration failed. Please try again."
@@ -71,75 +61,82 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <h2>Register</h2>
+      <div className="auth-content-wrapper">
+        <h2>Create Account</h2>
 
-      {apiError && <div className="alert alert-danger">{apiError}</div>}
+        {apiError && <div className="auth-alert error">{apiError}</div>}
 
-      <form onSubmit={handleSubmit(submitForm)}>
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={values.username}
-            onChange={handleChange}
-            required
-          />
-          {errors.username && <span className="error">{errors.username}</span>}
+        <form className="auth-form" onSubmit={handleSubmit(submitForm)}>
+          <div className="auth-form-group">
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={values.name}
+              onChange={handleChange}
+              required
+            />
+            {errors.name && <span className="error">{errors.name}</span>}
+          </div>
+
+          <div className="auth-form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={values.email}
+              onChange={handleChange}
+              required
+            />
+            {errors.email && <span className="error">{errors.email}</span>}
+          </div>
+
+          <div className="auth-form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={values.password}
+              onChange={handleChange}
+              required
+            />
+            {errors.password && (
+              <span className="error">{errors.password}</span>
+            )}
+          </div>
+
+          <div className="auth-form-group">
+            <label htmlFor="password_confirmation">Confirm Password</label>
+            <input
+              type="password"
+              id="password_confirmation"
+              name="password_confirmation"
+              value={values.password_confirmation}
+              onChange={handleChange}
+              required
+            />
+            {errors.password_confirmation && (
+              <span className="error">{errors.password_confirmation}</span>
+            )}
+          </div>
+
+          <button
+            className="auth-form-button"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating Account..." : "Register"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          Already have an account?{" "}
+          <button onClick={() => navigate("/login")}>Login</button>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={values.email}
-            onChange={handleChange}
-            required
-          />
-          {errors.email && <span className="error">{errors.email}</span>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={values.password}
-            onChange={handleChange}
-            required
-            minLength="8"
-          />
-          {errors.password && <span className="error">{errors.password}</span>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password_confirmation">Confirm Password</label>
-          <input
-            type="password"
-            id="password_confirmation"
-            name="password_confirmation"
-            value={values.password_confirmation}
-            onChange={handleChange}
-            required
-          />
-          {errors.password_confirmation && (
-            <span className="error">{errors.password_confirmation}</span>
-          )}
-        </div>
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Registering..." : "Register"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account?{" "}
-        <button onClick={() => navigate("/")}>Login</button>
-      </p>
+      </div>
     </div>
   );
 };

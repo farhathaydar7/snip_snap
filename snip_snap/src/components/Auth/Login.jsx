@@ -66,46 +66,54 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <div className="auth-content-wrapper">
+        <h2>Login</h2>
 
-      {apiError && <div className="alert alert-danger">{apiError}</div>}
+        {apiError && <div className="auth-alert error">{apiError}</div>}
 
-      <form onSubmit={handleSubmit(submitForm)}>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={values.email}
-            onChange={handleChange}
-            required
-          />
-          {errors.email && <span className="error">{errors.email}</span>}
+        <form className="auth-form" onSubmit={handleSubmit(submitForm)}>
+          <div className="auth-form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={values.email}
+              onChange={handleChange}
+              required
+            />
+            {errors.email && <span className="error">{errors.email}</span>}
+          </div>
+
+          <div className="auth-form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={values.password}
+              onChange={handleChange}
+              required
+            />
+            {errors.password && (
+              <span className="error">{errors.password}</span>
+            )}
+          </div>
+
+          <button
+            className="auth-form-button"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          Don't have an account?{" "}
+          <button onClick={() => navigate("/register")}>Register</button>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={values.password}
-            onChange={handleChange}
-            required
-          />
-          {errors.password && <span className="error">{errors.password}</span>}
-        </div>
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Logging in..." : "Login"}
-        </button>
-      </form>
-
-      <p>
-        Don't have an account?{" "}
-        <button onClick={() => navigate("/register")}>Register</button>
-      </p>
+      </div>
     </div>
   );
 };

@@ -25,11 +25,18 @@ class SnippetRepository implements SnippetRepositoryInterface
         }
 
         if (isset($filters['search']) && !empty($filters['search'])) {
-            $search = $filters['search'];
+            // Log the search term for debugging
+            \Log::debug('Search term: ' . $filters['search']);
+
+            $search = '%' . str_replace(['%', '_'], ['\%', '\_'], $filters['search']) . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('code', 'like', "%{$search}%");
+                $q->where('title', 'like', $search)
+                    ->orWhere('description', 'like', $search)
+                    ->orWhere('code', 'like', $search)
+                    ->orWhere('language', 'like', $search)
+                    ->orWhereHas('tags', function ($tagQuery) use ($search) {
+                        $tagQuery->where('name', 'like', $search);
+                    });
             });
         }
 
@@ -41,10 +48,13 @@ class SnippetRepository implements SnippetRepositoryInterface
             $query->where('is_favorite', $filters['is_favorite']);
         }
 
-        if (isset($filters['tag'])) {
-            $tag = $filters['tag'];
+        if (isset($filters['tag']) && !empty($filters['tag'])) {
+            // Log the tag term for debugging
+            \Log::debug('Tag search term: ' . $filters['tag']);
+
+            $tag = '%' . str_replace(['%', '_'], ['\%', '\_'], $filters['tag']) . '%';
             $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', 'like', "%{$tag}%");
+                $q->where('name', 'like', $tag);
             });
         }
 

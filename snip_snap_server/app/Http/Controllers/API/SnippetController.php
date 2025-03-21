@@ -39,6 +39,20 @@ class SnippetController extends Controller
         $filters = $request->all();
         $perPage = $request->has('per_page') ? (int) $request->per_page : 10;
 
+        // Debug log all filters
+        \Log::debug('Search filters: ' . json_encode($filters));
+
+        // Sanitize and trim the search and tag parameters if present
+        if (isset($filters['search'])) {
+            $filters['search'] = trim($filters['search']);
+            \Log::debug('Sanitized search term: ' . $filters['search']);
+        }
+
+        if (isset($filters['tag'])) {
+            $filters['tag'] = trim($filters['tag']);
+            \Log::debug('Sanitized tag term: ' . $filters['tag']);
+        }
+
         $snippets = $this->snippetService->getAllSnippets($filters, $perPage);
 
         return response()->json($snippets);

@@ -35,6 +35,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
+      console.log("Fetching snippets with filters:", JSON.stringify(filters));
       const response = await snippetService.getAllSnippets(filters);
 
       if (!isMounted.current) return;

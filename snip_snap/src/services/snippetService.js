@@ -7,17 +7,20 @@ const snippetService = {
     // Build the query string from filters
     let queryParams = new URLSearchParams();
 
-    if (filters.search) queryParams.append("search", filters.search);
+    if (filters.search) queryParams.append("search", filters.search.trim());
     if (filters.language) queryParams.append("language", filters.language);
-    if (filters.tag) queryParams.append("tag", filters.tag);
+    if (filters.tag) queryParams.append("tag", filters.tag.trim());
     if (filters.favorites) queryParams.append("is_favorite", "1");
     if (filters.page) queryParams.append("page", filters.page);
 
     const queryString = queryParams.toString();
     const url = `${API_URL}/snippets${queryString ? `?${queryString}` : ""}`;
 
+    console.log("Sending search request:", url, filters); // Debug log
+
     try {
       const response = await authAxios.get(url);
+      console.log("Search response:", response.data); // Debug log
       return response.data; // The Laravel API returns data within response.data
     } catch (error) {
       console.error("API Error:", error);

@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         error,
+        isAuthenticated: !!user,
         login: loginUser,
         register: registerUser,
         logout: logoutUser,

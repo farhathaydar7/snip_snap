@@ -33,8 +33,17 @@ const Login = () => {
       const response = await axios.post(ENDPOINTS.AUTH.LOGIN, formValues);
       console.log("Login response:", response.data);
 
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+      // The API returns an access_token property in the response
+      if (response.data && response.data.access_token) {
+        // Store the token from the correct property
+        localStorage.setItem("token", response.data.access_token);
+
+        // Store user info if needed
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+
+        // Navigate to dashboard on success
         navigate("/dashboard");
       } else {
         setApiError(

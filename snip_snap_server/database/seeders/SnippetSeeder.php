@@ -54,12 +54,18 @@ class SnippetSeeder extends Seeder
             // Set favorite status (30% chance of being favorite)
             $snippetData['is_favorite'] = rand(0, 9) < 3;
 
+            // Extract tags before creating snippet
+            $tags = isset($snippetData['tags']) ? $snippetData['tags'] : $this->generateTags($snippetData['language']);
+
+            // Remove tags from snippet data as it's not a column in the snippets table
+            if (isset($snippetData['tags'])) {
+                unset($snippetData['tags']);
+            }
+
             // Create the snippet
             $snippet = Snippet::create($snippetData);
 
             // Create tags for the snippet
-            $tags = $snippetData['tags'] ?? $this->generateTags($snippetData['language']);
-
             foreach ($tags as $tagName) {
                 // Create tag if it doesn't exist
                 $tag = Tag::firstOrCreate(
@@ -222,7 +228,7 @@ class SnippetSeeder extends Seeder
                 'title' => 'Flutter StatefulWidget',
                 'description' => 'Basic Flutter StatefulWidget example',
                 'language' => 'Dart',
-                'code' => "import 'package:flutter/material.dart';\n\nclass CounterWidget extends StatefulWidget {\n  const CounterWidget({Key? key}) : super(key: key);\n\n  @override\n  _CounterWidgetState createState() => _CounterWidgetState();\n}\n\nclass _CounterWidgetState extends State<CounterWidget> {\n  int _counter = 0;\n\n  void _incrementCounter() {\n    setState(() {\n      _counter++;\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text('Counter Example'),\n      ),\n      body: Center(\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: <Widget>[\n            Text(\n              'You have pushed the button this many times:',\n            ),\n            Text(\n              '$_counter',\n              style: Theme.of(context).textTheme.headline4,\n            ),\n          ],\n        ),\n      ),\n      floatingActionButton: FloatingActionButton(\n        onPressed: _incrementCounter,\n        tooltip: 'Increment',\n        child: Icon(Icons.add),\n      ),\n    );\n  }\n}",
+                'code' => "import 'package:flutter/material.dart';\n\nclass CounterWidget extends StatefulWidget {\n  const CounterWidget({Key? key}) : super(key: key);\n\n  @override\n  _CounterWidgetState createState() => _CounterWidgetState();\n}\n\nclass _CounterWidgetState extends State<CounterWidget> {\n  int _counter = 0;\n\n  void _incrementCounter() {\n    setState(() {\n      _counter++;\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text('Counter Example'),\n      ),\n      body: Center(\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: <Widget>[\n            Text(\n              'You have pushed the button this many times:',\n            ),\n            Text(\n              '\$_counter',\n              style: Theme.of(context).textTheme.headline4,\n            ),\n          ],\n        ),\n      ),\n      floatingActionButton: FloatingActionButton(\n        onPressed: _incrementCounter,\n        tooltip: 'Increment',\n        child: Icon(Icons.add),\n      ),\n    );\n  }\n}",
                 'tags' => ['dart', 'flutter', 'mobile', 'widget']
             ],
 
@@ -258,7 +264,7 @@ class SnippetSeeder extends Seeder
                 'title' => 'Swift Closures',
                 'description' => 'Using closures in Swift',
                 'language' => 'Swift',
-                'code' => "import Foundation\n\n// Sample array\nlet numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n// Map\nlet squared = numbers.map { $0 * $0 }\nprint(squared) // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n\n// Filter\nlet evenNumbers = numbers.filter { $0 % 2 == 0 }\nprint(evenNumbers) // [2, 4, 6, 8, 10]\n\n// Reduce\nlet sum = numbers.reduce(0, { $0 + $1 })\nprint(sum) // 55\n\n// Sorted\nlet descendingOrder = numbers.sorted(by: >)\nprint(descendingOrder) // [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]\n\n// Custom closure\nfunc performOperation(on numbers: [Int], using operation: (Int) -> Int) -> [Int] {\n    return numbers.map(operation)\n}\n\nlet doubled = performOperation(on: numbers) { $0 * 2 }\nprint(doubled) // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]",
+                'code' => "import Foundation\n\n// Sample array\nlet numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n// Map\nlet squared = numbers.map { \\$0 * \\$0 }\nprint(squared) // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n\n// Filter\nlet evenNumbers = numbers.filter { \\$0 % 2 == 0 }\nprint(evenNumbers) // [2, 4, 6, 8, 10]\n\n// Reduce\nlet sum = numbers.reduce(0, { \\$0 + \\$1 })\nprint(sum) // 55\n\n// Sorted\nlet descendingOrder = numbers.sorted(by: >)\nprint(descendingOrder) // [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]\n\n// Custom closure\nfunc performOperation(on numbers: [Int], using operation: (Int) -> Int) -> [Int] {\n    return numbers.map(operation)\n}\n\nlet doubled = performOperation(on: numbers) { \\$0 * 2 }\nprint(doubled) // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]",
                 'tags' => ['swift', 'closures', 'functional', 'ios']
             ]
         ];

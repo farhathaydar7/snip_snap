@@ -5,7 +5,7 @@ import useForm from "../../hooks/useForm";
 import { useAuth } from "../../hooks/useAuth.jsx";
 import axios from "axios";
 import ENDPOINTS from "../../config/links";
-// import "../../components/css/Auth.css";
+import "../css/Auth.css";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Register = () => {
     handleSubmit,
     setErrors,
   } = useForm({
-    name: "", // Laravel expects this as 'name'
+    username: "", // Laravel expects username, not name
     email: "",
     password: "",
     password_confirmation: "",
@@ -68,16 +68,16 @@ const Register = () => {
 
       <form onSubmit={handleSubmit(submitForm)}>
         <div className="form-group">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={values.name}
+            id="username"
+            name="username"
+            value={values.username}
             onChange={handleChange}
             required
           />
-          {errors.name && <span className="error">{errors.name}</span>}
+          {errors.username && <span className="error">{errors.username}</span>}
         </div>
 
         <div className="form-group">

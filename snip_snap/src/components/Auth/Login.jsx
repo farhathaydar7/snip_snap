@@ -1,29 +1,66 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
 import { useAuth } from "../../hooks/useAuth.jsx";
+import axios from "axios";
+import ENDPOINTS from "../../config/links";
+// import "../../components/css/Auth.css";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { values, errors, isSubmitting, handleChange, handleSubmit } = useForm({
+  const [apiError, setApiError] = useState("");
+
+  const {
+    values,
+    errors,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    setErrors,
+  } = useForm({
     email: "",
     password: "",
   });
 
   const submitForm = async (formValues) => {
+    setApiError("");
     try {
-      await login(formValues);
-      navigate("/dashboard");
+      console.log("Sending login data:", formValues);
+
+      // Direct API call to debug
+      const response = await axios.post(ENDPOINTS.AUTH.LOGIN, formValues);
+      console.log("Login response:", response.data);
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/dashboard");
+      } else {
+        setApiError(
+          "Login successful but no token received. Please try again."
+        );
+      }
     } catch (err) {
-      // Error handling is managed in the useForm hook
+      console.error("Login error:", err.response?.data || err.message);
+
+      if (err.response?.data?.errors) {
+        setErrors(err.response.data.errors);
+      } else {
+        setApiError(
+          err.response?.data?.message ||
+            "Login failed. Please check your credentials."
+        );
+      }
     }
   };
 
   return (
     <div className="login-container">
       <h2>Login</h2>
+
+      {apiError && <div className="alert alert-danger">{apiError}</div>}
+
       <form onSubmit={handleSubmit(submitForm)}>
         <div className="form-group">
           <label htmlFor="email">Email</label>

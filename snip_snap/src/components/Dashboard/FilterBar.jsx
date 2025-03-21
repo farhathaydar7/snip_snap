@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const FilterBar = ({ onFilterChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [language, setLanguage] = useState("");
   const [tag, setTag] = useState("");
   const [favorites, setFavorites] = useState(false);
+  const isInitialMount = useRef(true);
 
   // Languages supported by the application
   const languages = [
@@ -27,17 +28,27 @@ const FilterBar = ({ onFilterChange }) => {
     "Other",
   ];
 
-  // Apply filters when they change
+  // Apply filters when they change, but skip the first render
   useEffect(() => {
-    const filters = {
-      search: searchTerm,
-      language: language,
-      tag: tag,
-      favorites: favorites,
-    };
+    // Skip the first render to prevent double API calls on component mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
 
-    onFilterChange(filters);
-  }, [searchTerm, language, tag, favorites, onFilterChange]);
+    // Debounce filter changes
+    const timeoutId = setTimeout(() => {
+      const filters = {
+        search: searchTerm,
+        language: language,
+        tag: tag,
+        favorites: favorites,
+      };
+      onFilterChange(filters);
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, language, tag, favorites]); // Remove onFilterChange from dependencies
 
   // Reset all filters
   const handleResetFilters = () => {

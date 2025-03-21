@@ -16,8 +16,13 @@ const snippetService = {
     const queryString = queryParams.toString();
     const url = `${API_URL}/snippets${queryString ? `?${queryString}` : ""}`;
 
-    const response = await authAxios.get(url);
-    return response.data;
+    try {
+      const response = await authAxios.get(url);
+      return response.data; // The Laravel API returns data within response.data
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
+    }
   },
 
   getSnippet: async (id) => {

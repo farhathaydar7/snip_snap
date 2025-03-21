@@ -39,19 +39,42 @@ const Dashboard = () => {
 
       if (!isMounted.current) return;
 
-      setSnippets(response.data || []);
-      setPagination({
-        currentPage: response.current_page || 1,
-        lastPage: response.last_page || 1,
-        perPage: response.per_page || 10,
-        total: response.total || 0,
-      });
+      console.log("API Response:", response); // For debugging
+
+      // Check if the response has the expected structure
+      if (response && Array.isArray(response.data)) {
+        // Standard Laravel pagination response
+        setSnippets(response.data);
+        setPagination({
+          currentPage: response.current_page || 1,
+          lastPage: response.last_page || 1,
+          perPage: response.per_page || 10,
+          total: response.total || 0,
+        });
+      } else if (response && Array.isArray(response)) {
+        // In case the API returns an array directly
+        setSnippets(response);
+        setPagination({
+          currentPage: 1,
+          lastPage: 1,
+          perPage: response.length,
+          total: response.length,
+        });
+      } else {
+        // Fallback for unexpected response format
+        console.error("Unexpected API response format:", response);
+        setSnippets([]);
+        setError("Received unexpected data format from the server");
+      }
+
       setError(null);
     } catch (err) {
       if (!isMounted.current) return;
 
       console.error("Error fetching snippets:", err);
       setError("Failed to load snippets. Please try again later.");
+      setSnippets([]);
+
       // If unauthorized, redirect to login
       if (err.response && err.response.status === 401) {
         logout();
@@ -83,13 +106,19 @@ const Dashboard = () => {
     };
   }, []);
 
-  const handleFilterChange = (newFilters) => {
-    setFilters({ ...newFilters, page: 1 });
-  };
+  const handleFilterChange = useCallback((newFilters) => {
+    setFilters((prevFilters) => ({
+      ...newFilters,
+      page: 1,
+    }));
+  }, []);
 
-  const handlePageChange = (newPage) => {
-    setFilters({ ...filters, page: newPage });
-  };
+  const handlePageChange = useCallback((newPage) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      page: newPage,
+    }));
+  }, []);
 
   const handleToggleFavorite = async (snippetId, isFavorite) => {
     try {

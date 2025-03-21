@@ -84,14 +84,23 @@ export const getCurrentUser = async () => {
 export const checkTokenValidity = async () => {
   try {
     // Try to fetch user data with the current token
-    const response = await authAxios.get("/auth/me");
-    return response.status === 200;
+    const response = await authAxios.get(ENDPOINTS.AUTH.ME);
+    return response.status === 200 && response.data;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("Token validation failed, 401 Unauthorized");
       return false;
     }
-    // For any other error, we'll assume token is invalid
+
+    // Handle network errors or service unavailable
+    if (!error.response) {
+      console.error("Network error checking token validity");
+      // We don't log the user out on network errors to prevent kicking them
+      // out unnecessarily if it's just a temporary network issue
+      return true;
+    }
+
+    // For any other error response, assume token is invalid
     console.error("Error validating token:", error);
     return false;
   }

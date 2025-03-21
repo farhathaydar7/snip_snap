@@ -49,6 +49,15 @@ export const AuthProvider = ({ children }) => {
             // Clean up local storage/cookie
             localStorage.removeItem("token");
             sessionStorage.removeItem("token");
+
+            // Show notification to user
+            const message = "Your session has expired. Please log in again.";
+            alert(message);
+
+            // Force redirect to login page
+            if (window.location.pathname !== "/") {
+              window.location.href = "/";
+            }
           }
         } catch (err) {
           console.error("Error checking token validity:", err);
@@ -56,6 +65,15 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
           localStorage.removeItem("token");
           sessionStorage.removeItem("token");
+
+          // Show notification to user
+          const message = "Authentication error. Please log in again.";
+          alert(message);
+
+          // Force redirect to login page
+          if (window.location.pathname !== "/") {
+            window.location.href = "/";
+          }
         }
       }, 5000); // Check every 5 seconds
     }

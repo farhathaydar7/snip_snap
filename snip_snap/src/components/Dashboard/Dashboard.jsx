@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import SnippetList from "./SnippetList";
 import FilterBar from "./FilterBar";
@@ -27,12 +27,8 @@ const Dashboard = () => {
     total: 0,
   });
 
-  // Fetch snippets when filters change
-  useEffect(() => {
-    fetchSnippets();
-  }, [filters]);
-
-  const fetchSnippets = async () => {
+  // Define fetchSnippets with useCallback to avoid recreation on every render
+  const fetchSnippets = useCallback(async () => {
     setLoading(true);
     try {
       const response = await snippetService.getAllSnippets(filters);
@@ -55,7 +51,12 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, logout, navigate]);
+
+  // Fetch snippets when fetchSnippets changes (which happens when filters change)
+  useEffect(() => {
+    fetchSnippets();
+  }, [fetchSnippets]);
 
   const handleFilterChange = (newFilters) => {
     setFilters({ ...newFilters, page: 1 });

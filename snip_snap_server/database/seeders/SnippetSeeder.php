@@ -109,11 +109,12 @@ class SnippetSeeder extends Seeder
     }
 
     /**
-     * Get predefined snippet data
+     * Get predefined snippet data with additional simple snippets
      */
     private function getSnippetData()
     {
-        return [
+        // Existing snippets
+        $data = [
             // JavaScript Snippets
             [
                 'title' => 'JavaScript Array Filter',
@@ -255,7 +256,7 @@ class SnippetSeeder extends Seeder
                 'title' => 'Go Goroutines and Channels',
                 'description' => 'Concurrency with goroutines and channels in Go',
                 'language' => 'Go',
-                'code' => "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc worker(id int, jobs <-chan int, results chan<- int) {\n\tfor j := range jobs {\n\t\tfmt.Printf(\"Worker %d started job %d\\n\", id, j)\n\t\ttime.Sleep(time.Second) // Simulate work\n\t\tfmt.Printf(\"Worker %d finished job %d\\n\", id, j)\n\t\tresults <- j * 2 // Send result\n\t}\n}\n\nfunc main() {\n\tjobs := make(chan int, 5)\n\tresults := make(chan int, 5)\n\n\t// Start workers\n\tfor w := 1; w <= 3; w++ {\n\t\tgo worker(w, jobs, results)\n\t}\n\n\t// Send jobs\n\tfor j := 1; j <= 5; j++ {\n\t\tjobs <- j\n\t}\n\tclose(jobs)\n\n\t// Collect results\n\tfor a := 1; a <= 5; a++ {\n\t\t<-results\n\t}\n}",
+                'code' => "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc worker(id int, jobs <-chan int, results chan<- int) {\n\tfor j := range jobs {\n\t\tfmt.Printf(\"Worker %d started job %d\\n\", id, j)\n\t\ttime.Sleep(time.Second) // Simulate work\n\t\tfmt.Printf(\"Worker %d finished job %d\\n\", id, j)\n\t\tresults <- j * 2 // Send result\n\t}\n}\n\nfunc main() {\n\tjobs := make(chan int, 5)\n\tresults := make(chan int, 5)\n\n\t// Start workers\n\tfor w := 1; w <= 3; w++ {\n\t\tgo worker(w, jobs, results)\n\t}\n\n\t// Send jobs\n\tfor j := 1; j <= 5; j++ {\n\t\tjobs <- j\n\t}\n\tclose(jobs);\n\n\t// Collect results\n\tfor a := 1; a <= 5; a++ {\n\t\t<-results\n\t}\n}",
                 'tags' => ['go', 'concurrency', 'goroutines', 'channels']
             ],
 
@@ -264,9 +265,24 @@ class SnippetSeeder extends Seeder
                 'title' => 'Swift Closures',
                 'description' => 'Using closures in Swift',
                 'language' => 'Swift',
-                'code' => "import Foundation\n\n// Sample array\nlet numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n// Map\nlet squared = numbers.map { \\$0 * \\$0 }\nprint(squared) // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n\n// Filter\nlet evenNumbers = numbers.filter { \\$0 % 2 == 0 }\nprint(evenNumbers) // [2, 4, 6, 8, 10]\n\n// Reduce\nlet sum = numbers.reduce(0, { \\$0 + \\$1 })\nprint(sum) // 55\n\n// Sorted\nlet descendingOrder = numbers.sorted(by: >)\nprint(descendingOrder) // [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]\n\n// Custom closure\nfunc performOperation(on numbers: [Int], using operation: (Int) -> Int) -> [Int] {\n    return numbers.map(operation)\n}\n\nlet doubled = performOperation(on: numbers) { \\$0 * 2 }\nprint(doubled) // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]",
+                'code' => "import Foundation\n\n// Sample array\nlet numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n// Map\nlet squared = numbers.map { \\$0 * \\$0 }\nprint(squared) // [1, 4, 9, 16, 36, 49, 64, 81, 100]\n\n// Filter\nlet evenNumbers = numbers.filter { \\$0 % 2 == 0 }\nprint(evenNumbers) // [2, 4, 6, 8, 10]\n\n// Reduce\nlet sum = numbers.reduce(0, { \\$0 + \\$1 })\nprint(sum) // 55\n\n// Sorted\nlet descendingOrder = numbers.sorted(by: >)\nprint(descendingOrder) // [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]\n\n// Custom closure\nfunc performOperation(on numbers: [Int], using operation: (Int) -> Int) -> [Int] {\n    return numbers.map(operation)\n}\n\nlet doubled = performOperation(on: numbers) { \\$0 * 2 }\nprint(doubled) // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]",
                 'tags' => ['swift', 'closures', 'functional', 'ios']
             ]
         ];
+
+        // Append 50 additional simple snippets
+        for ($i = 1; $i <= 50; $i++) {
+            $data[] = [
+                'title'       => "Simple Snippet {$i}",
+                'description' => "A simple code snippet example number {$i}",
+                // For simplicity, we'll use PHP for these extra snippets.
+                // You can change the language or diversify it if needed.
+                'language'    => 'PHP',
+                'code'        => "<?php\n// Simple snippet {$i}\necho 'This is snippet number {$i}';\n?>",
+                'tags'        => ['simple', 'example']
+            ];
+        }
+
+        return $data;
     }
 }

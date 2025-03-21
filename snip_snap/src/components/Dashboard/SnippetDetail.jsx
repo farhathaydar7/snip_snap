@@ -7,6 +7,8 @@ const SnippetDetail = () => {
   const navigate = useNavigate();
   const isNewSnippet = id === "new";
 
+  console.log("SnippetDetail - id:", id, "isNewSnippet:", isNewSnippet);
+
   const [snippet, setSnippet] = useState({
     title: "",
     description: "",
@@ -25,14 +27,29 @@ const SnippetDetail = () => {
   useEffect(() => {
     if (!isNewSnippet) {
       fetchSnippetDetails();
+    } else {
+      // Initialize empty snippet for new snippet creation
+      setSnippet({
+        title: "",
+        description: "",
+        code: "",
+        language: "",
+        is_favorite: false,
+        tags: [],
+      });
+      setTagsInput("");
     }
-  }, [id]);
+  }, [id, isNewSnippet]);
 
   const fetchSnippetDetails = async () => {
     try {
       const data = await snippetService.getSnippet(id);
       setSnippet(data);
-      setTagsInput(data.tags.map((tag) => tag.name).join(", "));
+      setTagsInput(
+        data.tags && Array.isArray(data.tags)
+          ? data.tags.map((tag) => tag.name).join(", ")
+          : ""
+      );
     } catch (error) {
       setError("Failed to load snippet details.");
       console.error(error);
@@ -51,6 +68,11 @@ const SnippetDetail = () => {
   const handleToggleFavorite = async () => {
     if (isNewSnippet) {
       setSnippet({ ...snippet, is_favorite: !snippet.is_favorite });
+      return;
+    }
+
+    if (!id || id === "new") {
+      console.error("Cannot toggle favorite: Invalid snippet ID");
       return;
     }
 
@@ -84,6 +106,15 @@ const SnippetDetail = () => {
         tags: tagArray,
       };
 
+      console.log(
+        "Saving snippet:",
+        snippetToSave,
+        "isNewSnippet:",
+        isNewSnippet,
+        "id:",
+        id
+      );
+
       const savedSnippet = await snippetService.createOrUpdateSnippet(
         snippetToSave,
         isNewSnippet ? null : id
@@ -96,17 +127,27 @@ const SnippetDetail = () => {
         navigate(`/snippet/${savedSnippet.id}`);
       } else {
         setSnippet(savedSnippet);
-        setTagsInput(savedSnippet.tags.map((tag) => tag.name).join(", "));
+        if (savedSnippet.tags && Array.isArray(savedSnippet.tags)) {
+          setTagsInput(savedSnippet.tags.map((tag) => tag.name).join(", "));
+        } else {
+          setTagsInput("");
+        }
       }
     } catch (error) {
       setError("Failed to save snippet.");
-      console.error(error);
+      console.error("Save error:", error);
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async () => {
+    if (!id || id === "new") {
+      console.error("Cannot delete: Invalid snippet ID");
+      setError("Cannot delete: Invalid snippet ID");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this snippet?")) {
       try {
         await snippetService.deleteSnippet(id);

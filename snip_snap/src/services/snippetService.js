@@ -29,25 +29,62 @@ const snippetService = {
   },
 
   getSnippet: async (id) => {
+    if (!id || id === "new") {
+      return {
+        title: "",
+        description: "",
+        code: "",
+        language: "",
+        is_favorite: false,
+        tags: [],
+      };
+    }
     const response = await authAxios.get(`${API_URL}/snippets/${id}`);
     return response.data;
   },
 
   createOrUpdateSnippet: async (snippetData, id = null) => {
+    // Validate snippet data
+    if (!snippetData.title || !snippetData.language || !snippetData.code) {
+      console.error("Invalid snippet data:", snippetData);
+      throw new Error("Snippet must have title, language, and code");
+    }
+
+    // Ensure tags is always an array
+    if (!snippetData.tags) {
+      snippetData.tags = [];
+    }
+
+    // Determine the URL based on whether we're creating or updating
     const url = id
       ? `${API_URL}/snippets/create-or-update/${id}`
       : `${API_URL}/snippets/create-or-update`;
 
-    const response = await authAxios.post(url, snippetData);
-    return response.data;
+    console.log("API request to:", url, "with data:", snippetData);
+
+    try {
+      const response = await authAxios.post(url, snippetData);
+      return response.data;
+    } catch (error) {
+      console.error("API Error in createOrUpdateSnippet:", error);
+      throw error;
+    }
   },
 
   toggleFavorite: async (id) => {
+    if (!id || id === "new") {
+      console.error("Invalid ID provided to toggleFavorite:", id);
+      throw new Error("Invalid snippet ID");
+    }
     const response = await authAxios.post(`${API_URL}/snippets/${id}/favorite`);
     return response.data;
   },
 
   deleteSnippet: async (id) => {
+    if (!id || id === "new") {
+      console.error("Invalid ID provided to deleteSnippet:", id);
+      throw new Error("Invalid snippet ID");
+    }
     const response = await authAxios.delete(`${API_URL}/snippets/${id}`);
     return response.data;
   },

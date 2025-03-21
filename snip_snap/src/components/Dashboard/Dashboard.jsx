@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SnippetList from "./SnippetList";
 import FilterBar from "./FilterBar";
@@ -9,6 +9,8 @@ import snippetService from "../../services/snippetService";
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const isMounted = useRef(true);
+  const initialFetchDone = useRef(false);
 
   const [snippets, setSnippets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,18 +31,25 @@ const Dashboard = () => {
 
   // Define fetchSnippets with useCallback to avoid recreation on every render
   const fetchSnippets = useCallback(async () => {
+    if (!isMounted.current) return;
+
     setLoading(true);
     try {
       const response = await snippetService.getAllSnippets(filters);
-      setSnippets(response.data);
+
+      if (!isMounted.current) return;
+
+      setSnippets(response.data || []);
       setPagination({
-        currentPage: response.current_page,
-        lastPage: response.last_page,
-        perPage: response.per_page,
-        total: response.total,
+        currentPage: response.current_page || 1,
+        lastPage: response.last_page || 1,
+        perPage: response.per_page || 10,
+        total: response.total || 0,
       });
       setError(null);
     } catch (err) {
+      if (!isMounted.current) return;
+
       console.error("Error fetching snippets:", err);
       setError("Failed to load snippets. Please try again later.");
       // If unauthorized, redirect to login
@@ -49,14 +58,30 @@ const Dashboard = () => {
         navigate("/login");
       }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   }, [filters, logout, navigate]);
 
-  // Fetch snippets when fetchSnippets changes (which happens when filters change)
+  // Only fetch on mount and when filters change
   useEffect(() => {
-    fetchSnippets();
+    if (
+      !initialFetchDone.current ||
+      JSON.stringify(filters) !==
+        '{"search":"","language":"","tag":"","favorites":false,"page":1}'
+    ) {
+      fetchSnippets();
+      initialFetchDone.current = true;
+    }
   }, [fetchSnippets]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleFilterChange = (newFilters) => {
     setFilters({ ...newFilters, page: 1 });

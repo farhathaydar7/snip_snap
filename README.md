@@ -7,7 +7,7 @@ SnipSnap is a modern web application that helps developers store, organize, and 
 This project consists of two main components:
 - `snip_snap_server`: Laravel-based REST API backend
 - `snip_snap`: React-based frontend built with Vite
-
+## Public Url "http://52.47.95.15/"
 ### Backend Features
 
 The Laravel backend follows SOLID principles with a clean architecture:

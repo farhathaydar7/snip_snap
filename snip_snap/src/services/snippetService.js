@@ -1,6 +1,6 @@
 import { authAxios } from "./authService";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = "http://52.47.95.15:8000/api/";
 
 const snippetService = {
   getAllSnippets: async (filters = {}) => {

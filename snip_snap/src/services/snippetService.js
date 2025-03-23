@@ -14,7 +14,7 @@ const snippetService = {
     if (filters.page) queryParams.append("page", filters.page);
 
     const queryString = queryParams.toString();
-    const url = `${API_URL}/snippets${queryString ? `?${queryString}` : ""}`;
+    const url = `${API_URL}snippets${queryString ? `?${queryString}` : ""}`;
 
     console.log("Sending search request:", url, filters); // Debug log
 
@@ -39,7 +39,7 @@ const snippetService = {
         tags: [],
       };
     }
-    const response = await authAxios.get(`${API_URL}/snippets/${id}`);
+    const response = await authAxios.get(`${API_URL}snippets/${id}`);
     return response.data;
   },
 
@@ -57,8 +57,8 @@ const snippetService = {
 
     // Determine the URL based on whether we're creating or updating
     const url = id
-      ? `${API_URL}/snippets/create-or-update/${id}`
-      : `${API_URL}/snippets/create-or-update`;
+      ? `${API_URL}snippets/create-or-update/${id}`
+      : `${API_URL}snippets/create-or-update`;
 
     console.log("API request to:", url, "with data:", snippetData);
 
@@ -76,7 +76,7 @@ const snippetService = {
       console.error("Invalid ID provided to toggleFavorite:", id);
       throw new Error("Invalid snippet ID");
     }
-    const response = await authAxios.post(`${API_URL}/snippets/${id}/favorite`);
+    const response = await authAxios.post(`${API_URL}snippets/${id}/favorite`);
     return response.data;
   },
 
@@ -85,7 +85,7 @@ const snippetService = {
       console.error("Invalid ID provided to deleteSnippet:", id);
       throw new Error("Invalid snippet ID");
     }
-    const response = await authAxios.delete(`${API_URL}/snippets/${id}`);
+    const response = await authAxios.delete(`${API_URL}snippets/${id}`);
     return response.data;
   },
 };
